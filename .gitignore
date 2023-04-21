@@ -1,4 +1,5 @@
 /cache
 *.png
 .DS_Store
+*.axi
 
