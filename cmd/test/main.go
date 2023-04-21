@@ -14,27 +14,34 @@ import (
 )
 
 const (
-	Step          = 250
+	Step          = 175
 	Z             = 9
 	Size          = 2048
 	Padding       = 0
 	LineWidth     = 1
 	HistogramStep = 100
 
-	Country = ""
-	State   = ""
-	County  = ""
-	STATEFP = ""
+	Country  = ""
+	State    = ""
+	Province = ""
+	County   = ""
+	STATEFP  = ""
 
 	Lat, Lng   = 43.482486, -110.780319
 	M          = 0.5
 	Lat0, Lng0 = Lat - 0.1*M, Lng - 0.175*M
 	Lat1, Lng1 = Lat + 0.1*M, Lng + 0.175*M
 
-	CountryShapefile = "ne_10m_admin_0_countries/wgs84.shp"
+	// CountryShapefile = "ne_10m_admin_0_countries/wgs84.shp"
+	// CountryShapefile = "ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp"
+	CountryShapefile = "ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp"
+
 	// CountryShapefile = "TM_WORLD_BORDERS-0.3/wgs84.shp"
-	StateShapefile  = "cb_2016_us_state_500k/wgs84.shp"
-	CountyShapefile = "cb_2016_us_county_500k/wgs84.shp"
+	StateShapefile     = "cb_2016_us_state_500k/wgs84.shp"
+	ProvincesShapefile = "ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp"
+
+	// CountyShapefile = "cb_2016_us_county_500k/wgs84.shp"
+	CountyShapefile = "ne_10m_admin_2_counties/ne_10m_admin_2_counties.shp"
 
 	URLTemplate    = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
 	CacheDirectory = "cache"
@@ -59,6 +66,15 @@ func loadShapes() ([]maps.Shape, error) {
 
 		shapes, err := maps.LoadShapefile(StateShapefile,
 			maps.NewShapeTagFilter("STUSPS", State))
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, shapes...)
+	} else if Province != "" {
+		fmt.Println("loading shapes from province...")
+
+		shapes, err := maps.LoadShapefile(ProvincesShapefile,
+			maps.NewShapeTagFilter("STUSPS", Province))
 		if err != nil {
 			return nil, err
 		}
