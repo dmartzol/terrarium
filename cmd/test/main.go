@@ -120,8 +120,11 @@ func main() {
 	bounds := maps.BoundsForShapes(shapes...)
 	min := terrarium.Point(bounds.Min)
 	max := terrarium.Point(bounds.Max)
+
+	fmt.Println("bounds:")
 	fmt.Println(min)
 	fmt.Println(max)
+	fmt.Println()
 
 	p0 := terrarium.TileXY(Z, min)
 	p1 := terrarium.TileXY(Z, max)
@@ -138,7 +141,7 @@ func main() {
 	x1++
 	y1++
 	n := (y1 - y0) * (x1 - x0)
-	fmt.Printf("%d tiles\n", n)
+	fmt.Printf("%d tile(s)\n", n)
 
 	fmt.Println("downloading tiles...")
 	cache := terrarium.NewCache(URLTemplate, CacheDirectory, MaxDownloads)
