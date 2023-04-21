@@ -108,12 +108,13 @@ func loadShapes() ([]maps.Shape, error) {
 func main() {
 	shapes, err := loadShapes()
 	if err != nil {
-		panic(err)
+		fmt.Printf("error loading shapes: %v", err)
+		os.Exit(1)
 	}
 
 	if len(shapes) == 0 {
 		fmt.Println("no shapes!")
-		return
+		os.Exit(1)
 	}
 
 	bounds := maps.BoundsForShapes(shapes...)
