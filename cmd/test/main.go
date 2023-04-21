@@ -46,6 +46,8 @@ const (
 func loadShapes() ([]maps.Shape, error) {
 	var result []maps.Shape
 	if Country != "" {
+		fmt.Println("loading shapes from country...")
+
 		shapes, err := maps.LoadShapefile(CountryShapefile,
 			maps.NewShapeTagFilter("NAME", Country))
 		if err != nil {
@@ -53,6 +55,8 @@ func loadShapes() ([]maps.Shape, error) {
 		}
 		result = append(result, shapes...)
 	} else if State != "" {
+		fmt.Println("loading shapes from state...")
+
 		shapes, err := maps.LoadShapefile(StateShapefile,
 			maps.NewShapeTagFilter("STUSPS", State))
 		if err != nil {
@@ -60,6 +64,8 @@ func loadShapes() ([]maps.Shape, error) {
 		}
 		result = append(result, shapes...)
 	} else if County != "" {
+		fmt.Println("loading shapes from county...")
+
 		shapes, err := maps.LoadShapefile(CountyShapefile,
 			maps.NewShapeTagFilter("NAME", County),
 			maps.NewShapeTagFilter("STATEFP", STATEFP))
@@ -68,17 +74,32 @@ func loadShapes() ([]maps.Shape, error) {
 		}
 		result = append(result, shapes...)
 	} else {
+		fmt.Println("loading shapes from coordinates...")
+
 		min := terrarium.LatLng(Lat0, Lng0)
 		max := terrarium.LatLng(Lat1, Lng1)
-		bounds := maps.Bounds{maps.Point(min), maps.Point(max)}
-		line := maps.NewPolyline([]maps.Point{
-			maps.Point{min.X, min.Y},
-			maps.Point{max.X, min.Y},
-			maps.Point{max.X, max.Y},
-			maps.Point{min.X, max.Y},
-			maps.Point{min.X, min.Y},
-		})
-		shape := maps.Shape{bounds, []*maps.Polyline{line}, nil}
+
+		bounds := maps.Bounds{
+			Min: maps.Point(min),
+			Max: maps.Point(max),
+		}
+
+		points := []maps.Point{
+			{X: min.X, Y: min.Y},
+			{X: max.X, Y: min.Y},
+			{X: max.X, Y: max.Y},
+			{X: min.X, Y: max.Y},
+			{X: min.X, Y: min.Y},
+		}
+		line := maps.NewPolyline(points)
+		lines := []*maps.Polyline{line}
+
+		shape := maps.Shape{
+			Bounds: bounds,
+			Lines:  lines,
+			Tags:   nil,
+		}
+
 		result = append(result, shape)
 	}
 	return result, nil
@@ -89,10 +110,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	if len(shapes) == 0 {
 		fmt.Println("no shapes!")
 		return
 	}
+
 	bounds := maps.BoundsForShapes(shapes...)
 	min := terrarium.Point(bounds.Min)
 	max := terrarium.Point(bounds.Max)
